@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка письма</title>
+    <style>
+        :root {
+            --bg: #f4f6fb;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #1d4ed8;
+            --border: #d9e2f1;
+            --shadow: 0 18px 40px rgba(30, 41, 59, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header,
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .current-user {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--text);
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
+        .nav a.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .panel {
+            padding: 32px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            margin: 0 0 26px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 16px;
+            background: #f8fafc;
+            color: var(--text);
+        }
+
+        textarea {
+            min-height: 220px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            background: var(--accent);
+            color: #ffffff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="header">
+            <div class="topbar">
+                <div class="brand">EmailBox</div>
+                <div class="current-user">
+                    Текущий пользователь: {{ user.email }}
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="{% url 'inbox' %}">Входящие</a>
+                <a href="{% url 'sent' %}">Исходящие</a>
+                <a href="{% url 'archive' %}">Архив</a>
+                <a href="{% url 'trash' %}">Корзина</a>
+                <a href="{% url 'select_user' %}">Сменить пользователя</a>
+                <a href="{% url 'send_email' %}">Написать письмо</a>
+            </nav>
+        </header>
+
+        <section class="panel">
+            <h1>Новое письмо</h1>
+
+            <form method="post" class="form-grid">
+                {% csrf_token %}
+
+                <div>
+                    <label for="topic">Тема</label>
+                    <input type="text" name="topic">
+                </div>
+
+                <div>
+                    <label for="recipient">Получатель</label>
+                    <select name="recipient">
+                        {% for user in users %} 
+                            <option value="{{ user.id }}">{{ user.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="text">Текст письма</label>
+                    <textarea name="text"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Отправить письмо</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

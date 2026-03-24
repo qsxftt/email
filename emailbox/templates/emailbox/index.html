@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg: #f4f6fb;
+            --panel: #ffffff;
+            --panel-soft: #eef3ff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #1d4ed8;
+            --accent-soft: #dbeafe;
+            --border: #d9e2f1;
+            --shadow: 0 18px 40px rgba(30, 41, 59, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .current-user {
+            color: var(--muted);
+            background: var(--panel-soft);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 14px;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--text);
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
+        .nav a.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .hero {
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 34px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .mail-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .mail-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .mail-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mail-title {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .mail-date {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .mail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .mail-meta span {
+            background: var(--panel-soft);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .mail-preview {
+            margin: 0;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .mail-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .empty {
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="header">
+            <div class="topbar">
+                <div class="brand">EmailBox</div>
+                <div class="current-user">
+                    Текущий пользователь: {{ user.email }}
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="{% url 'inbox' %}">Входящие</a>
+                <a href="{% url 'sent' %}">Исходящие</a>
+                <a href="{% url 'archive' %}">Архив</a>
+                <a href="{% url 'trash' %}">Корзина</a>
+                <a href="{% url 'select_user' %}">Сменить пользователя</a>
+                <a href="{% url 'send_email' %}">Написать письмо</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>{{ title }}</h1>
+        </section>
+
+        <section class="mail-list">
+            {% if emails %}
+                {% for email in emails %}
+                    <a href="{% url 'detail_email' email.id %}" class="mail-link">
+                    <article class="mail-card">
+                        <div class="mail-head">
+                            <h2 class="mail-title">{{ email.topic }}</h2>
+                            <span class="mail-date">{{ email.sent_at }}</span>
+                        </div>
+
+                        <div class="mail-meta">
+                            <span>От: {{ email.sender }}</span>
+                            <span>Кому: {{ email.recipient }}</span>
+                            {% if email.is_read %}
+                                <span>Статус: Прочитано</span>
+                            {% else %}
+                                <span>Статус: Непрочитано</span>
+                            {% endif %}
+                        </div>
+
+                        <p class="mail-preview">{{ email.text }}</p>
+                    </article>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    Здесь пока нет писем.
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>
